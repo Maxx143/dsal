@@ -1,0 +1,164 @@
+//record.py
+class Record:
+    def __init__(self,name=None,number=None):
+        self._name=name
+        self._number=number   
+    def get_number(self):
+        return self._number    
+    def get_name(self):
+        return self._name 
+    def __str__(self):
+        return f"Name : {self._name}\tNumber : {self._number}" if self!=None else "None"
+    def __eq__(self, rec2):
+         if rec2==None:
+             return False
+         return self.get_name()==rec2.get_name() and self.get_number()==rec2.get_number()
+//linpro.py
+class HashTable:
+    def __init__(self):
+        self.size=int(input("Enter size of Hash Table:"))
+        self.table=[None for i in range(self.size)]
+        self.elements=0
+    def hash_func(self,number):
+        return number%self.size
+    def isFull(self)->bool:
+        return self.elements==self.size
+    def insert(self,rec):
+        if self.isFull():
+           print("Hash Table is full.")
+           return
+        position=self.hash_func(rec.get_number())
+        if self.table[position]==None:
+            self.table[position]=rec
+            self.elements+=1
+        else:
+            while(self.table[position]!=None):
+                position+=1
+                if position==self.size:
+                   position=0
+            self.table[position]=rec
+            self.elements+=1
+        print("Inserted new Record")
+        
+    def search(self,rec):
+        if self.elements==0:
+            print("Hash Table is Empty")
+            return
+        position=self.hash_func(rec.get_number())
+        i=0
+        while(i<self.size and self.table[position]!= None):
+               if rec==self.table[position]:
+                   print(f"Record found at position number {position} after {i} comparison")
+                   return
+               else:
+                   position+=1
+                   if position==self.size:
+                       position=0
+               i+=1     
+        print("Record not found")           
+
+    def display(self):
+        for i in range(self.size):
+            print(f"Hash position {i}       {self.table[i]}")
+//doubhas.py
+class DoubleHashTable():
+    def __init__(self):
+        self.size=int(input("Enter size of Hash Table:"))
+        self.table=[None for i in range(self.size)]
+        self.elements=0
+    def isFull(self)->bool:
+        return self.elements==self.size
+    def h1(self,number):
+        return number%self.size
+    def h2(self,number):
+        return 5-(number%5)
+    def double_hash(self,number,i):    
+        return (self.h1(number)+i*self.h2(number))%self.size
+    def double_hashing(self,number):
+        i=1
+        position=self.double_hash(number,1)
+        while(i<self.size and self.table[position]!=None):
+            i+=1
+            position=self.double_hash(number,i)
+        return position
+    def insert(self,rec):
+        if self.isFull():
+           print("Hash Table is full.")
+           return
+        position=self.h1(rec.get_number())
+        if self.table[position]==None:
+            self.table[position]=rec
+            self.elements+=1
+        else:
+            position=self.double_hashing(rec.get_number())
+            self.table[position]=rec
+            self.elements+=1
+        print("Inserted new Record")
+        
+    def search(self,rec):
+        if self.elements==0:
+           print("Hash Table is empty.")
+           return
+        position=self.h1(rec.get_number())
+        i=0
+        while(i<self.size and self.table[position]!= None):
+               if rec==self.table[position]:
+                   print(f"Record found at position number {position} after {i} comparison")
+                   return
+               else:
+                   position=self.double_hashing(rec.get_number())
+               i+=1  
+        print("Record not found")           
+
+    def display(self):
+        for i in range(self.size):
+            print(f"Hash position {i}       {self.table[i]}")
+
+//main.py
+from Record import Record
+from linearprobing import HashTable as ht 
+from doublehashing import DoubleHashTable as dht
+def input_record():
+    rec=Record(input("Name:"),int(input("Number:")))
+    return rec
+def options(obj):
+  while True:
+    print("\n1.Insert")
+    print("2.Search")
+    print("3.Display")
+    print("4.Go Back")
+    choice=input("Enter choice:")
+    match choice:
+        case "1":
+            print("Enter new record details:")
+            obj.insert(input_record())
+        case "2":
+            print("Enter details of record to search:")
+            obj.search(input_record())
+        case "3":
+            obj.display()
+        case "4":
+            print("Back to Main Menu...")
+            return
+        case _:
+            print("Enter Valid Choice!")
+while(True):
+    print("\n1.Linear Probing")
+    print("2.Double Hashing")
+    print("3.Exit")
+    ch=input("Enter choice:")
+    match ch:
+        case "1":
+            table=ht()
+            options(table)
+        case "2":
+            table=dht()
+            options(table)
+        case "3": 
+            print("Exiting the program...")
+            exit()
+        case _:
+            print("Enter Valid Choice!")
+            
+            
+         
